@@ -113,7 +113,6 @@ const curiosities = [
 let currentDepth = 0;
 let viewedIndices = new Set();
 let todayIndex = Math.floor(Math.random() * curiosities.length);
-
 // DOM Elements
 const rabbitHoleBtn = document.getElementById('rabbit-hole-btn');
 const goDeeperBtn = document.getElementById('go-deeper-btn');
@@ -127,7 +126,6 @@ const categoryBadge = document.getElementById('category-badge');
 const todayCuriosityArea = document.getElementById('today-curiosity');
 const relatedGrid = document.getElementById('related-grid');
 const mainCard = document.getElementById('main-result-card');
-
 // Random utility avoiding already viewed
 function getRandomCuriosityIndex(excludeIndices = []) {
     let available = curiosities.map((_, i) => i).filter(i => !excludeIndices.includes(i));
@@ -137,35 +135,6 @@ function getRandomCuriosityIndex(excludeIndices = []) {
     }
     return available[Math.floor(Math.random() * available.length)];
 }
-
-// Scramble Text Effect function
-const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+";
-function scrambleText(element, newText, duration = 800) {
-    const originalText = newText;
-    let iteration = 0;
-    let frameRate = 30; // ms
-    let totalFrames = duration / frameRate;
-
-    clearInterval(element.scrambleInterval);
-
-    element.scrambleInterval = setInterval(() => {
-        element.textContent = originalText.split("").map((letter, index) => {
-            if (index < iteration) {
-                return originalText[index];
-            }
-            if (letter === " ") return " ";
-            return chars[Math.floor(Math.random() * chars.length)];
-        }).join("");
-
-        if (iteration >= originalText.length) {
-            clearInterval(element.scrambleInterval);
-            element.textContent = originalText; // Ensure exact match at end
-        }
-
-        iteration += (originalText.length / totalFrames);
-    }, frameRate);
-}
-
 // Reveal a rabbit hole
 function revealRabbitHole() {
     currentDepth++;
@@ -173,39 +142,33 @@ function revealRabbitHole() {
     depthValue.classList.remove('pulse');
     void depthValue.offsetWidth; // trigger reflow
     depthValue.classList.add('pulse');
-
     const nextIndex = getRandomCuriosityIndex([...viewedIndices, todayIndex]);
     viewedIndices.add(nextIndex);
     const data = curiosities[nextIndex];
-
     // Hide briefly for animation
     resultArea.style.opacity = '0';
-    resultArea.style.transform = 'translateY(30px)';
+    resultArea.style.transform = 'translateY(20px)';
+    
     // Reset 3d tilt instantly
-    mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    if(mainCard) {
+        mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    }
     
     setTimeout(() => {
-        // Scramble animation for title
-        scrambleText(resultTitle, data.title, 800);
-        
+        resultTitle.textContent = data.title;
         resultDesc.textContent = data.description;
         factText.textContent = data.fact;
         resultLink.href = data.link;
-
         categoryBadge.textContent = data.category;
         
-        // Change badge color based on category
+        // Clean classification
         if(data.category === 'Everyday') {
-            categoryBadge.className = 'badge everyday';
-        } else if (data.category === 'Psychology') {
-            categoryBadge.className = 'badge';
+            categoryBadge.className = 'category-badge everyday';
+        } else if (data.category === 'Culture') {
+            categoryBadge.className = 'category-badge culture';
         } else {
-            categoryBadge.className = 'badge';
-            categoryBadge.style.backgroundColor = 'rgba(76, 201, 240, 0.1)';
-            categoryBadge.style.color = '#00A896';
-            categoryBadge.style.borderColor = 'rgba(76, 201, 240, 0.2)';
+            categoryBadge.className = 'category-badge';
         }
-
         resultArea.classList.remove('hidden');
         
         // Retrigger transition
@@ -221,26 +184,30 @@ function revealRabbitHole() {
         });
     }, 400); 
 }
-
 function initializeStaticSections() {
     // Populate Today's Curiosity
     const todayData = curiosities[todayIndex];
+    let badgeClass = '';
+    if (todayData.category === 'Everyday') badgeClass = 'everyday';
+    if (todayData.category === 'Culture') badgeClass = 'culture';
     todayCuriosityArea.innerHTML = `
-        <div class="card-header" style="margin-bottom: 0.5rem;">
-            <span class="badge ${todayData.category === 'Everyday' ? 'everyday' : ''}" style="margin-bottom: 0;">${todayData.category}</span>
+        <div class="card-header" style="margin-bottom: 1.5rem;">
+            <span class="category-badge ${badgeClass}">${todayData.category}</span>
         </div>
-        <h4 class="card-title" style="font-size: 2.2rem; margin-bottom: 0.5rem;">${todayData.title}</h4>
+        <h4 class="card-title" style="font-size: 2rem; margin-bottom: 1rem;">${todayData.title}</h4>
         <p class="card-desc" style="margin-bottom: 1.5rem;">${todayData.description}</p>
-        <div class="hidden-fact" style="margin-bottom: 2.5rem;">
+        <div class="hidden-fact" style="margin-bottom: 2rem;">
             <span class="fact-label">Fascinating Fact</span>
             <p>${todayData.fact}</p>
         </div>
         <div class="card-actions">
-            <a href="${todayData.link}" target="_blank" rel="noopener noreferrer" class="link-btn">Dive into the Research ↗</a>
+            <a href="${todayData.link}" target="_blank" rel="noopener noreferrer" class="read-more-btn">
+                Dive into the Research 
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
         </div>
     `;
-
-    // Populate Related Curiosities
+    // Populate Archives
     const shownRelated = [];
     let exclude = [todayIndex];
     for (let i = 0; i < 4; i++) {
@@ -250,86 +217,103 @@ function initializeStaticSections() {
             exclude.push(rIndex);
         }
     }
-
     relatedGrid.innerHTML = shownRelated.map(item => `
         <div class="mini-card group">
             <span class="mini-category">${item.category}</span>
             <h4>${item.title}</h4>
             <p>${item.description}</p>
             <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="mini-link">
-                Investigate <span class="arrow">→</span>
+                Investigate 
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
         </div>
     `).join('');
 }
-
-// Interactive 3D Tilt Effect
+// Add scrolling behavior to navbar
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 20) {
+        navbar.style.boxShadow = '0 4px 6px -1px rgb(0 0 0 / 0.1)';
+        navbar.style.padding = '1rem 5%';
+    } else {
+        navbar.style.boxShadow = 'none';
+        navbar.style.padding = '1.5rem 5%';
+    }
+});
+// Interactive 3D Tilt Effect on Main Card
 document.addEventListener('mousemove', (e) => {
     if(resultArea.classList.contains('hidden') || window.innerWidth < 768) return;
     
     const rect = mainCard.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
     if(x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
-        // Center coordinates
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
-        // Calculate tilt
-        const tiltX = (y - centerY) / 25; // divider controls intensity
-        const tiltY = (centerX - x) / 25;
+        const tiltX = (y - centerY) / 30;
+        const tiltY = (centerX - x) / 30;
         
-        // Cap max rotation
         const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
         
-        mainCard.style.transform = `perspective(1000px) rotateX(${clamp(tiltX, -8, 8)}deg) rotateY(${clamp(tiltY, -8, 8)}deg) scale3d(1.02, 1.02, 1.02)`;
+        mainCard.style.transform = `perspective(1000px) rotateX(${clamp(tiltX, -5, 5)}deg) rotateY(${clamp(tiltY, -5, 5)}deg)`;
     } else {
-        mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
     }
 });
-
 document.addEventListener('mouseleave', () => {
-    if(mainCard) mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    if(mainCard) mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
 });
-
-
-// Event Listeners
+// Buttons
 rabbitHoleBtn.addEventListener('click', () => {
     if (currentDepth === 0) {
         document.querySelector('.btn-text').textContent = "Probe Deeper into the Mind";
+        document.querySelector('.hero-action-area').classList.remove('delay-3'); // remove animation delay class on click so it doesn't wait
     }
     revealRabbitHole();
 });
-
 goDeeperBtn.addEventListener('click', revealRabbitHole);
-
-// Init
+// Mobile Menu Toggle logic
+const mobileBtn = document.querySelector('.mobile-menu-btn');
+mobileBtn.addEventListener('click', () => {
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks.style.display === 'flex') {
+        navLinks.style.display = 'none';
+    } else {
+        navLinks.style.display = 'flex';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '100%';
+        navLinks.style.right = '0';
+        navLinks.style.background = '#FAFAFC';
+        navLinks.style.padding = '2rem';
+        navLinks.style.border = '1px solid #E2E8F0';
+        navLinks.style.borderRadius = '0 0 0 16px';
+        navLinks.style.boxShadow = '-5px 5px 15px rgba(0,0,0,0.05)';
+    }
+});
+// Initialization
 initializeStaticSections();
-
-// Canvas Background Light dust particles
+// Canvas Background Light dust particles (Emerald hint)
 const canvas = document.getElementById('particle-canvas');
 if(canvas) {
     const ctx = canvas.getContext('2d');
     let particlesArray;
-
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
     resizeCanvas();
-
     window.addEventListener('resize', () => {
         resizeCanvas();
         initParticles();
     });
-
     class Particle {
-        constructor(x, y, directionX, directionY, size, alpha) {
+        constructor(x, y, dx, dy, size, alpha) {
             this.x = x;
             this.y = y;
-            this.directionX = directionX;
-            this.directionY = directionY;
+            this.dx = dx;
+            this.dy = dy;
             this.size = size;
             this.alpha = alpha;
             this.baseAlpha = alpha;
@@ -338,46 +322,38 @@ if(canvas) {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
             const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-            gradient.addColorStop(0, `rgba(67, 97, 238, ${this.alpha})`);
-            gradient.addColorStop(1, `rgba(67, 97, 238, 0)`);
+            gradient.addColorStop(0, `rgba(16, 185, 129, ${this.alpha})`); // Emerald trace
+            gradient.addColorStop(1, `rgba(16, 185, 129, 0)`);
             ctx.fillStyle = gradient;
             ctx.fill();
         }
         update() {
-            if (this.x > canvas.width || this.x < 0) {
-                this.directionX = -this.directionX;
-            }
-            if (this.y > canvas.height || this.y < 0) {
-                this.directionY = -this.directionY;
-            }
+            if (this.x > canvas.width || this.x < 0) this.dx = -this.dx;
+            if (this.y > canvas.height || this.y < 0) this.dy = -this.dy;
             
-            this.x += this.directionX;
-            this.y += this.directionY;
+            this.x += this.dx;
+            this.y += this.dy;
             
             // Soft pulse
-            this.alpha = this.baseAlpha + Math.sin(Date.now() / 1500 + this.x) * 0.05;
-
+            this.alpha = this.baseAlpha + Math.sin(Date.now() / 2000 + this.x) * 0.05;
             this.draw();
         }
     }
-
     function initParticles() {
         particlesArray = [];
-        let numberOfParticles = (canvas.height * canvas.width) / 12000;
-        if (numberOfParticles > 80) numberOfParticles = 80;
+        let numParticles = (canvas.height * canvas.width) / 15000;
+        if (numParticles > 60) numParticles = 60;
         
-        for (let i = 0; i < numberOfParticles; i++) {
-            let size = (Math.random() * 25) + 5;
+        for (let i = 0; i < numParticles; i++) {
+            let size = (Math.random() * 20) + 5;
             let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
             let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-            let directionX = (Math.random() * 0.4) - 0.2;
-            let directionY = (Math.random() * 0.4) - 0.2;
-            let alpha = Math.random() * 0.15 + 0.02;
-
-            particlesArray.push(new Particle(x, y, directionX, directionY, size, alpha));
+            let dx = (Math.random() * 0.4) - 0.2;
+            let dy = (Math.random() * 0.4) - 0.2;
+            let alpha = Math.random() * 0.1 + 0.01;
+            particlesArray.push(new Particle(x, y, dx, dy, size, alpha));
         }
     }
-
     function animateParticles() {
         requestAnimationFrame(animateParticles);
         ctx.clearRect(0, 0, innerWidth, innerHeight);
@@ -386,7 +362,7 @@ if(canvas) {
             particlesArray[i].update();
         }
     }
-
     initParticles();
     animateParticles();
 }
+
