@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_new.css">
 </head>
 <body>
     <nav class="navbar">
@@ -19,32 +19,52 @@
             <a href="#today-section">Daily Curiosities</a>
             <a href="#related-section">The Archive</a>
         </div>
+        <!-- Mobile Menu Toggle -->
+        <div class="mobile-menu-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </nav>
-
     <main>
+        <!-- Modern "Lovable" Style Hero Section -->
         <section class="hero-section">
+            <div class="hero-background-grid"></div>
             <div class="hero-content">
-                <h2 class="mystic-title">Question the Everyday.</h2>
-                <p class="subtitle">Explore the psychology of the human mind, the quirks of everyday life, and the strange phenomena hiding in plain sight.</p>
-                <div class="action-area">
-                    <button id="rabbit-hole-btn" class="interactive-btn">
+                <div class="hero-badge fade-in-up">
+                    <span class="badge-icon">✨</span>
+                    <span class="badge-text">The Interactive Curiosity Engine</span>
+                </div>
+                
+                <h1 class="hero-title fade-in-up delay-1">
+                    Question the <span class="text-gradient">Everyday.</span>
+                </h1>
+                
+                <p class="hero-subtitle fade-in-up delay-2">
+                    Explore the psychology of the human mind, the quirks of everyday life, and the strange phenomena hiding in plain sight.
+                </p>
+                
+                <div class="hero-action-area fade-in-up delay-3">
+                    <button id="rabbit-hole-btn" class="primary-btn">
                         <span class="btn-text">Descend into the Rabbit Hole</span>
-                        <div class="btn-highlight"></div>
+                        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                     </button>
-                    <div class="depth-counter">
-                        Depth: <span id="depth-value" class="accent-text">0</span>
+                    
+                    <div class="depth-indicator">
+                        <div class="depth-pulse"></div>
+                        <span class="depth-label">Current Depth:</span>
+                        <span id="depth-value" class="depth-value">0</span>
                     </div>
                 </div>
             </div>
         </section>
-
         <!-- Hidden initially, shown after click -->
         <section id="result-area" class="result-section hidden">
             <div class="glass-card main-card" id="main-result-card">
                 <div class="card-header">
-                    <span class="badge" id="category-badge">Psychology</span>
+                    <span class="category-badge" id="category-badge">Psychology</span>
                 </div>
-                <!-- Interactive Scramble Title -->
+                
                 <h2 id="result-title" class="card-title">Title</h2>
                 
                 <div class="interactive-desc">
@@ -58,37 +78,44 @@
                 </div>
                 
                 <div class="card-actions">
-                    <a id="result-link" href="#" target="_blank" rel="noopener noreferrer" class="link-btn">Read the Article ↗</a>
-                    <button id="go-deeper-btn" class="secondary-btn">Next Anomaly ⤓</button>
+                    <a id="result-link" href="#" target="_blank" rel="noopener noreferrer" class="read-more-btn">
+                        Read the Article 
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                    <button id="go-deeper-btn" class="next-btn">
+                        Next Anomaly
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </button>
                 </div>
             </div>
         </section>
-
-        <section id="today-section" class="related-section">
+        <section id="today-section" class="content-section">
             <div class="section-heading">
                 <h3>Today's Focus</h3>
-                <div class="line"></div>
             </div>
-            <div class="glass-card featured-card" id="today-curiosity">
+            <div class="featured-card" id="today-curiosity">
                 <!-- Populated by JS -->
             </div>
         </section>
-
-        <section id="related-section" class="grid-section">
+        <section id="related-section" class="content-section">
             <div class="section-heading">
                 <h3>The Archive of Curiosities</h3>
-                <div class="line"></div>
             </div>
             <div class="card-grid" id="related-grid">
                 <!-- Populated by JS -->
             </div>
         </section>
     </main>
-
     <footer>
-        <p>A pristine white room filled with infinite doors. How many will you open?</p>
+        <div class="footer-content">
+            <p>Built for those moments when curiosity wins over sleep.</p>
+            <p>Made for late-night explorers.</p>
+            <p class="author">Built by Tanu Nath</p>
+        </div>
     </footer>
-
-    <script src="script.js"></script>
+    <!-- Background script handles canvas generation -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <script src="script_new.js"></script>
 </body>
 </html>
