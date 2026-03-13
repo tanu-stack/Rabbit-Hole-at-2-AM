@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_new.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar">
@@ -26,6 +26,7 @@
             <span></span>
         </div>
     </nav>
+
     <main>
         <!-- Modern "Lovable" Style Hero Section -->
         <section class="hero-section">
@@ -58,6 +59,7 @@
                 </div>
             </div>
         </section>
+
         <!-- Hidden initially, shown after click -->
         <section id="result-area" class="result-section hidden">
             <div class="glass-card main-card" id="main-result-card">
@@ -80,7 +82,7 @@
                 <div class="card-actions">
                     <a id="result-link" href="#" target="_blank" rel="noopener noreferrer" class="read-more-btn">
                         Read the Article 
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 19"></polyline></svg>
                     </a>
                     <button id="go-deeper-btn" class="next-btn">
                         Next Anomaly
@@ -89,6 +91,7 @@
                 </div>
             </div>
         </section>
+
         <section id="today-section" class="content-section">
             <div class="section-heading">
                 <h3>Today's Focus</h3>
@@ -97,6 +100,7 @@
                 <!-- Populated by JS -->
             </div>
         </section>
+
         <section id="related-section" class="content-section">
             <div class="section-heading">
                 <h3>The Archive of Curiosities</h3>
@@ -106,6 +110,7 @@
             </div>
         </section>
     </main>
+
     <footer>
         <div class="footer-content">
             <p>Built for those moments when curiosity wins over sleep.</p>
@@ -113,9 +118,10 @@
             <p class="author">Built by Tanu Nath</p>
         </div>
     </footer>
+
     <!-- Background script handles canvas generation -->
     <canvas id="particle-canvas"></canvas>
     
-    <script src="script_new.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
