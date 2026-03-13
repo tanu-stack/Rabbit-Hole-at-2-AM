@@ -113,6 +113,7 @@ const curiosities = [
 let currentDepth = 0;
 let viewedIndices = new Set();
 let todayIndex = Math.floor(Math.random() * curiosities.length);
+
 // DOM Elements
 const rabbitHoleBtn = document.getElementById('rabbit-hole-btn');
 const goDeeperBtn = document.getElementById('go-deeper-btn');
@@ -126,6 +127,7 @@ const categoryBadge = document.getElementById('category-badge');
 const todayCuriosityArea = document.getElementById('today-curiosity');
 const relatedGrid = document.getElementById('related-grid');
 const mainCard = document.getElementById('main-result-card');
+
 // Random utility avoiding already viewed
 function getRandomCuriosityIndex(excludeIndices = []) {
     let available = curiosities.map((_, i) => i).filter(i => !excludeIndices.includes(i));
@@ -135,6 +137,7 @@ function getRandomCuriosityIndex(excludeIndices = []) {
     }
     return available[Math.floor(Math.random() * available.length)];
 }
+
 // Reveal a rabbit hole
 function revealRabbitHole() {
     currentDepth++;
@@ -142,9 +145,11 @@ function revealRabbitHole() {
     depthValue.classList.remove('pulse');
     void depthValue.offsetWidth; // trigger reflow
     depthValue.classList.add('pulse');
+
     const nextIndex = getRandomCuriosityIndex([...viewedIndices, todayIndex]);
     viewedIndices.add(nextIndex);
     const data = curiosities[nextIndex];
+
     // Hide briefly for animation
     resultArea.style.opacity = '0';
     resultArea.style.transform = 'translateY(20px)';
@@ -159,6 +164,7 @@ function revealRabbitHole() {
         resultDesc.textContent = data.description;
         factText.textContent = data.fact;
         resultLink.href = data.link;
+
         categoryBadge.textContent = data.category;
         
         // Clean classification
@@ -169,6 +175,7 @@ function revealRabbitHole() {
         } else {
             categoryBadge.className = 'category-badge';
         }
+
         resultArea.classList.remove('hidden');
         
         // Retrigger transition
@@ -184,12 +191,14 @@ function revealRabbitHole() {
         });
     }, 400); 
 }
+
 function initializeStaticSections() {
     // Populate Today's Curiosity
     const todayData = curiosities[todayIndex];
     let badgeClass = '';
     if (todayData.category === 'Everyday') badgeClass = 'everyday';
     if (todayData.category === 'Culture') badgeClass = 'culture';
+
     todayCuriosityArea.innerHTML = `
         <div class="card-header" style="margin-bottom: 1.5rem;">
             <span class="category-badge ${badgeClass}">${todayData.category}</span>
@@ -207,6 +216,7 @@ function initializeStaticSections() {
             </a>
         </div>
     `;
+
     // Populate Archives
     const shownRelated = [];
     let exclude = [todayIndex];
@@ -217,6 +227,7 @@ function initializeStaticSections() {
             exclude.push(rIndex);
         }
     }
+
     relatedGrid.innerHTML = shownRelated.map(item => `
         <div class="mini-card group">
             <span class="mini-category">${item.category}</span>
@@ -229,6 +240,7 @@ function initializeStaticSections() {
         </div>
     `).join('');
 }
+
 // Add scrolling behavior to navbar
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
@@ -240,6 +252,7 @@ window.addEventListener('scroll', () => {
         navbar.style.padding = '1.5rem 5%';
     }
 });
+
 // Interactive 3D Tilt Effect on Main Card
 document.addEventListener('mousemove', (e) => {
     if(resultArea.classList.contains('hidden') || window.innerWidth < 768) return;
@@ -247,6 +260,7 @@ document.addEventListener('mousemove', (e) => {
     const rect = mainCard.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
     if(x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
@@ -261,9 +275,11 @@ document.addEventListener('mousemove', (e) => {
         mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
     }
 });
+
 document.addEventListener('mouseleave', () => {
     if(mainCard) mainCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
 });
+
 // Buttons
 rabbitHoleBtn.addEventListener('click', () => {
     if (currentDepth === 0) {
@@ -272,7 +288,9 @@ rabbitHoleBtn.addEventListener('click', () => {
     }
     revealRabbitHole();
 });
+
 goDeeperBtn.addEventListener('click', revealRabbitHole);
+
 // Mobile Menu Toggle logic
 const mobileBtn = document.querySelector('.mobile-menu-btn');
 mobileBtn.addEventListener('click', () => {
@@ -292,22 +310,27 @@ mobileBtn.addEventListener('click', () => {
         navLinks.style.boxShadow = '-5px 5px 15px rgba(0,0,0,0.05)';
     }
 });
+
 // Initialization
 initializeStaticSections();
+
 // Canvas Background Light dust particles (Emerald hint)
 const canvas = document.getElementById('particle-canvas');
 if(canvas) {
     const ctx = canvas.getContext('2d');
     let particlesArray;
+
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
     resizeCanvas();
+
     window.addEventListener('resize', () => {
         resizeCanvas();
         initParticles();
     });
+
     class Particle {
         constructor(x, y, dx, dy, size, alpha) {
             this.x = x;
@@ -336,9 +359,11 @@ if(canvas) {
             
             // Soft pulse
             this.alpha = this.baseAlpha + Math.sin(Date.now() / 2000 + this.x) * 0.05;
+
             this.draw();
         }
     }
+
     function initParticles() {
         particlesArray = [];
         let numParticles = (canvas.height * canvas.width) / 15000;
@@ -346,23 +371,4 @@ if(canvas) {
         
         for (let i = 0; i < numParticles; i++) {
             let size = (Math.random() * 20) + 5;
-            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-            let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-            let dx = (Math.random() * 0.4) - 0.2;
-            let dy = (Math.random() * 0.4) - 0.2;
-            let alpha = Math.random() * 0.1 + 0.01;
-            particlesArray.push(new Particle(x, y, dx, dy, size, alpha));
-        }
-    }
-    function animateParticles() {
-        requestAnimationFrame(animateParticles);
-        ctx.clearRect(0, 0, innerWidth, innerHeight);
-        
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-        }
-    }
-    initParticles();
-    animateParticles();
-}
-
+            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2))
